@@ -1,150 +1,151 @@
 USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
-MAIN_KEYS = [    
-                ['Подписка', 'Следующий Матч', 'Информация о последнем матче'],     
-                ['Турнирная таблица', 'Трансляции', 'Об авторе']
+MAIN_KEYS = [
+                ['Трансляции', 'Следующий Матч'],
+                ['Информация о последнем матче'],
+                ['Турнирная таблица'],
+                ['Мой клуб', 'Об авторе']
             ]
 
 EPL_CLUBS = [
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-},
-{
-            'name': ' ',
-            'emblem': ' ',
-            'founded': ' ',
-            'stadium': ' ',
-            'web': ' '
-}
-            ]
-
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    {
+        'name': ' ',
+        'emblem': ' ',
+        'founded': ' ',
+        'stadium': ' ',
+        'web': ' ',
+        },
+    ]
