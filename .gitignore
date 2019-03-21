@@ -1,0 +1,7 @@
+bot_env
+*.pyc
+__pycache__
+*.vscode
+*.log
+my_bot_token.py
+my_bot_proxy.py
