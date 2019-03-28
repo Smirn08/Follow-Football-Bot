@@ -49,8 +49,11 @@ def get_club_full_info(result_links):
         all_club_info = soup.find('table', class_='standard_tabelle')
         line_hell = all_club_info.find_all('td', class_='hell')
         line_dunkel = all_club_info.find_all('td', class_='dunkel')
+        embl = soup.find('div', class_='emblem')
+        embl_link = embl.find('img')
         EPL_CLUBS.append({
             'team': line_hell[1].text,
+            'emblem_link': embl_link['src'],
             'full_name': line_hell[3].text,
             'country': line_hell[5].text.replace('\t', '').replace('\n', '').replace('\r', ''),
             'nickname': line_hell[7].text,
@@ -58,7 +61,7 @@ def get_club_full_info(result_links):
             'colors': line_dunkel[3].text,
             'stadium': line_hell[9].text.replace('\t', '').replace('\n', ' '),
             'st_capacity': '',
-            'address': line_hell[11].text.replace('\t', '').replace('\n', '').replace('\r', ''),
+            'st_address': line_hell[11].text.replace('\t', '').replace('\n', '').replace('\r', ''),
             'homepage': line_dunkel[5].text
         })
 
