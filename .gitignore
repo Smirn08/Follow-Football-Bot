@@ -1,6 +1,7 @@
 bot_env
-*.pyc
+SQLite
 __pycache__
+*.pyc
 *.vscode
 *.log
 my_bot_token.py
