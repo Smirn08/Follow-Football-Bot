@@ -22,3 +22,5 @@ cursor.execute("""CREATE TABLE color
 cursor.execute("""CREATE TABLE stadium
                 (stadium_id INT PRIMARY KEY, name, capacity, address)
                """)
+db.commit()
+db.close()
