@@ -4,6 +4,7 @@ from random import choice
 from emoji import emojize
 from my_bot_token import TOKEN
 from my_bot_proxy import PROXY
+from take_club_from_db import take_club_from_db
 import settings
 import logging
 
@@ -30,6 +31,52 @@ def talk_to_me(bot, update):
     update.message.reply_text(user_text)
 
 
+def club_follow(bot, update):
+    club = update.message.text.split()[1]
+    if club == 'afc_b':
+        update.message.reply_text(take_club_from_db(1))
+    elif club == 'ars':
+        update.message.reply_text(take_club_from_db(2))
+    elif club == 'bri':
+        update.message.reply_text(take_club_from_db(3))
+    elif club == 'burn':
+        update.message.reply_text(take_club_from_db(4))
+    elif club == 'card':
+        update.message.reply_text(take_club_from_db(5))
+    elif club == 'cfc':
+        update.message.reply_text(take_club_from_db(6))
+    elif club == 'cry':
+        update.message.reply_text(take_club_from_db(7))
+    elif club == 'eve':
+        update.message.reply_text(take_club_from_db(8))
+    elif club == 'ful':
+        update.message.reply_text(take_club_from_db(9))
+    elif club == 'hud':
+        update.message.reply_text(take_club_from_db(10))
+    elif club == 'lei':
+        update.message.reply_text(take_club_from_db(11))
+    elif club == 'lfc':
+        update.message.reply_text(take_club_from_db(12))
+    elif club == 'city':
+        update.message.reply_text(take_club_from_db(13))
+    elif club == 'mnu':
+        update.message.reply_text(take_club_from_db(14))
+    elif club == 'new':
+        update.message.reply_text(take_club_from_db(15))
+    elif club == 'sou':
+        update.message.reply_text(take_club_from_db(16))
+    elif club == 'tot':
+        update.message.reply_text(take_club_from_db(17))
+    elif club == 'wat':
+        update.message.reply_text(take_club_from_db(18))
+    elif club == 'whu':
+        update.message.reply_text(take_club_from_db(19))
+    elif club == 'wol':
+        update.message.reply_text(take_club_from_db(20))
+    else:
+        update.message.reply_text('Такого клуба нет в EPL')
+
+
 def main():
     mybot = Updater(TOKEN, request_kwargs=PROXY)
 
@@ -38,6 +85,7 @@ def main():
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    dp.add_handler(CommandHandler('club', club_follow))
 
     mybot.start_polling()
     mybot.idle()
