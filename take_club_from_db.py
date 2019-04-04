@@ -1,5 +1,4 @@
 import sqlite3
-import emoji
 
 
 def take_club_from_db(club_id):
@@ -18,7 +17,9 @@ def take_club_from_db(club_id):
                             color.emoji_code,
                             stadium.name,
                             stadium.capacity,
-                            stadium.address
+                            stadium.address,
+                            unique_info.emblem_link,
+                            unique_info.homepage
                     FROM clubs
                     INNER JOIN unique_info
                         ON clubs.club_id = unique_info.club_id
@@ -36,17 +37,20 @@ def take_club_from_db(club_id):
     for info in results:
         t_info = info
 
-    club_id = t_info[0]
-    club_name = t_info[1]
-    full_club_name = t_info[2]
-    nickname = t_info[3]
-    founded = t_info[4]
-    country_name = t_info[5]
-    country_emoji = emoji.emojize(t_info[6], use_aliases=True)
-    clr_name = t_info[7]
-    clr_emoji = emoji.emojize(t_info[8], use_aliases=True)
-    st_name = t_info[9]
-    st_capacity = t_info[10]
-    st_address = t_info[11]
+    # club_id = t_info[0]
+    # club_name = t_info[1]
+    # full_club_name = t_info[2]
+    # nickname = t_info[3]
+    # founded = t_info[4]
+    # country_name = t_info[5]
+    # country_emoji = emoji.emojize(t_info[6], use_aliases=True)
+    # clr_name = t_info[7]
+    # clr_emoji = emoji.emojize(t_info[8], use_aliases=True)
+    # st_name = t_info[9]
+    # st_capacity = t_info[10]
+    # st_address = t_info[11]
+    # embl_link = t_info[12]
+    # site = t_info[13]
 
-    return results
+    return t_info
+
