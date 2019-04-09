@@ -1,11 +1,51 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
 USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
-MAIN_KEYS = [
-                ['Трансляции', 'Следующий Матч'],
-                ['Информация о последнем матче'],
-                ['Турнирная таблица'],
-                ['Мой клуб', 'Об авторе']
-            ]
+################################ KEYBOARDS ####################################
+MAIN_MENU_KEYS = [[InlineKeyboardButton('Трансляции', callback_data='links'),
+                    InlineKeyboardButton('Следующий Матч', callback_data='next')],
+                [InlineKeyboardButton('Информация о последнем матче', callback_data='last')],
+                [InlineKeyboardButton('Турнирная таблица', callback_data='table')],
+                [InlineKeyboardButton('Мой клуб', callback_data='my_club'),
+                    InlineKeyboardButton('Об авторе', callback_data='about')]]
+
+LINKS = [[InlineKeyboardButton('Уведомления', callback_data='alarm'),
+            InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+ALARM = [[InlineKeyboardButton('<', callback_data='links'),
+            InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+LAST_GAME = [[InlineKeyboardButton('Подробнее', callback_data='game'),
+                InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+MY_CLUB_MENU = [[InlineKeyboardButton('Сменить клуб', callback_data='change'),
+                    InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+ABOUT_BUTTONS = [[InlineKeyboardButton('press F to pay respect', url='https://t.me/Smirn08'),
+                    InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+MENU_BUTTON = [[InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+
+START_KEYS = [[InlineKeyboardButton('Выбрать клуб', callback_data='p1')]]
+
+CHANGE_CLUB = [[InlineKeyboardButton('Да! Решил выбрать другой!', callback_data='p1')],
+                [InlineKeyboardButton('Нет. Передумал...', callback_data='menu')]]
+
+FIRST_PAGE_KEYS = [[InlineKeyboardButton('>', callback_data='p2')]]
+
+SECOND_PAGE_KEYS = [[InlineKeyboardButton('|<', callback_data='p1'),
+                    InlineKeyboardButton('>', callback_data='p3')]]
+
+THIRD_PAGE_KEYS = [[InlineKeyboardButton('<', callback_data='p2'),
+                    InlineKeyboardButton('>|', callback_data='p4')]]
+
+FORTH_PAGE_KEYS = [[InlineKeyboardButton('<', callback_data='p3')]]
+
+LAST_CHOICE = [[InlineKeyboardButton('Подтвердить выбор', callback_data='add_user')],
+                [InlineKeyboardButton('Выбрать другой клуб', callback_data='change')]]
+
+###############################################################################
 
 COLORS = (
     {
@@ -52,7 +92,8 @@ COLORS = (
         'id': 109,
         'name': 'black white',
         'emoji': '⚫️ ⚪️'
-        })
+        }
+)
 
 COUNTRY = (
     {
@@ -64,7 +105,8 @@ COUNTRY = (
         'id': 202,
         'name': 'Wales',
         'emoji': '🏴󠁧󠁢󠁷󠁬󠁳󠁿'
-        })
+        }
+)
 
 CLUB_COMMAND_LIST = [
         'afcb', 'afc', 'bha', 'bfc', 'car',
@@ -72,6 +114,13 @@ CLUB_COMMAND_LIST = [
         'lei', 'lfc', 'mcfc', 'mufc', 'new',
         'sou', 'tot', 'wfc', 'whu', 'wol'
 ]
+
+CLUBS_TG_ID = {
+        '/afcb': 1, '/afc': 2, '/bha': 3, '/bfc': 4, '/car': 5,
+        '/cfc': 6, '/cpfc': 7, '/efc': 8, '/ffc': 9, '/htfc': 10,
+        '/lei': 11, '/lfc': 12, '/mcfc': 13, '/mufc': 14, '/new': 15,
+        '/sou': 16, '/tot': 17, '/wfc': 18, '/whu': 19, '/wol': 20
+}
 
 LIST_ONE = f'''*AFC Bournemouth*
 /afcb
@@ -116,6 +165,8 @@ LIST_FOUR = f'''*Southampton FC*
 /whu
 *Wolverhampton Wanderers*
 /wol'''
+
+ABOUT = f'''bot by [Maksim Smirnov](github.com/Smirn08)'''
 
 
 # CLUB_PRINT_TEXT = f'''*{t_info[2]}* {t_info[6]}
