@@ -1,29 +1,23 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram.ext import CallbackQueryHandler, ConversationHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram import ReplyKeyboardMarkup
+import logging
 from random import choice
-from emoji import emojize
+
+import settings
 from my_bot_token import TOKEN
 from my_bot_proxy import PROXY
 from take_club_from_db import take_club_from_db
-import settings
-import logging
+
+from emoji import emojize
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+from telegram.ext import CallbackQueryHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     handlers=[logging.FileHandler('bot.log', 'w', 'utf-8')]
                     )
-
-
-# def greet_user(bot, update):
-#     emo_hi = emojize(choice(settings.USER_EMOJI), use_aliases=True)
-#     text = '''Привет {} {}, давай смотреть футбол вместе!
-# Подписывайся на свой любимый клуб и ты никогда не пропустишь матч!
-# Какой твой любимый клуб EPL?'''.format(update.message.chat.first_name, emo_hi)
-#     my_keyboard = ReplyKeyboardMarkup(settings.MAIN_KEYS)
-#     update.message.reply_text(f'{text}', reply_markup=my_keyboard)
 
 
 def talk_to_me(bot, update):
@@ -35,83 +29,65 @@ def talk_to_me(bot, update):
 
 def start(bot, update):
     emo_hi = emojize(choice(settings.USER_EMOJI), use_aliases=True)
-    text = '''Привет {} {}, давай смотреть футбол вместе!
+    text = '''Привет *{}* {}, давай смотреть футбол вместе!
 Подписывайся на свой любимый клуб и ты никогда не пропустишь матч!
 Какой твой любимый клуб EPL?'''.format(update.message.chat.first_name, emo_hi)
-    update.message.reply_text(text, reply_markup=start_keyboard())
-
-
-def start_keyboard():
-    keyboard = [[InlineKeyboardButton('Выбрать клуб', callback_data='p1')]]
-    return InlineKeyboardMarkup(keyboard)
+    update.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(settings.START_KEYS),
+        parse_mode='Markdown')
 
 
 def first_page(bot, update):
     query = update.callback_query
-    bot.edit_message_text(chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=settings.LIST_ONE,
-                    reply_markup=first_page_keyboard(),
-                    parse_mode='Markdown')
-
-
-def first_page_keyboard():
-    keyboard = [[InlineKeyboardButton('>', callback_data='p2')]]
-    return InlineKeyboardMarkup(keyboard)
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=settings.LIST_ONE,
+        reply_markup=InlineKeyboardMarkup(settings.FIRST_PAGE_KEYS),
+        parse_mode='Markdown',
+        )
 
 
 def second_page(bot, update):
     query = update.callback_query
-    bot.edit_message_text(chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=settings.LIST_TWO,
-                    reply_markup=second_page_keyboard(),
-                    parse_mode='Markdown')
-
-
-def second_page_keyboard():
-    keyboard = [[InlineKeyboardButton('|<', callback_data='p1'),
-                InlineKeyboardButton('>', callback_data='p3')]]
-    return InlineKeyboardMarkup(keyboard)
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=settings.LIST_TWO,
+        reply_markup=InlineKeyboardMarkup(settings.SECOND_PAGE_KEYS),
+        parse_mode='Markdown',
+        )
 
 
 def third_page(bot, update):
     query = update.callback_query
-    bot.edit_message_text(chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=settings.LIST_THREE,
-                    reply_markup=third_page_keyboard(),
-                    parse_mode='Markdown')
-
-
-def third_page_keyboard():
-    keyboard = [[InlineKeyboardButton('<', callback_data='p2'),
-                InlineKeyboardButton('>|', callback_data='p4')]]
-    return InlineKeyboardMarkup(keyboard)
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=settings.LIST_THREE,
+        reply_markup=InlineKeyboardMarkup(settings.THIRD_PAGE_KEYS),
+        parse_mode='Markdown',
+        )
 
 
 def forth_page(bot, update):
     query = update.callback_query
-    bot.edit_message_text(chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=settings.LIST_FOUR,
-                    reply_markup=forth_page_keyboard(),
-                    parse_mode='Markdown')
-
-
-def forth_page_keyboard():
-    keyboard = [[InlineKeyboardButton('<', callback_data='p3')]]
-    return InlineKeyboardMarkup(keyboard)
-
-
-###############################################################################
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=settings.LIST_FOUR,
+        reply_markup=InlineKeyboardMarkup(settings.FORTH_PAGE_KEYS),
+        parse_mode='Markdown',
+        )
 
 
 def my_club(bot, update):
     chat_id = update.message.chat_id
-    club = update.message.text
-    if club == '/afcb':
-        t_info = take_club_from_db(1)
+    bot.delete_message(chat_id=chat_id,
+         message_id=update.message.message_id)
+    if update.message.text in settings.CLUBS_TG_ID.keys():
+        club_db_id = settings.CLUBS_TG_ID[update.message.text]
+        t_info = take_club_from_db(club_db_id)
         logo_link = t_info[12]
         bot.send_photo(chat_id=chat_id, photo=logo_link,
         caption=f'''*{t_info[2]}* {t_info[6]}
@@ -124,317 +100,151 @@ def my_club(bot, update):
 *Address:* {t_info[11]}
 
 *Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
+                    .replace('https://','')}]({t_info[13]})''',
+        reply_markup=InlineKeyboardMarkup(settings.LAST_CHOICE),
         parse_mode="Markdown")
-    elif club == '/afc':
-        t_info = take_club_from_db(2)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/bha':
-        t_info = take_club_from_db(3)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/bfc':
-        t_info = take_club_from_db(4)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/car':
-        t_info = take_club_from_db(5)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/cfc':
-        t_info = take_club_from_db(6)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/cpfc':
-        t_info = take_club_from_db(7)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/efc':
-        t_info = take_club_from_db(8)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/ffc':
-        t_info = take_club_from_db(9)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/htfc':
-        t_info = take_club_from_db(10)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/lei':
-        t_info = take_club_from_db(11)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/lfc':
-        t_info = take_club_from_db(12)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/mcfc':
-        t_info = take_club_from_db(13)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/mufc':
-        t_info = take_club_from_db(14)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/new':
-        t_info = take_club_from_db(15)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/sou':
-        t_info = take_club_from_db(16)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/tot':
-        t_info = take_club_from_db(17)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/wfc':
-        t_info = take_club_from_db(18)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/whu':
-        t_info = take_club_from_db(19)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    elif club == '/wol':
-        t_info = take_club_from_db(20)
-        logo_link = t_info[12]
-        bot.send_photo(chat_id=chat_id, photo=logo_link,
-        caption=f'''*{t_info[2]}* {t_info[6]}
-{t_info[3]} | {t_info[8]}
-
-*Founded:* {t_info[4]}
-
-*Home:* {t_info[9]}
-*Capacity:* {t_info[10]}
-*Address:* {t_info[11]}
-
-*Web:* [{t_info[13].replace('http://','')
-                   .replace('https://','')}]({t_info[13]})''',
-        parse_mode="Markdown")
-    else:
-        update.message.reply_text('Такого клуба нет в EPL')
+    return club_db_id == club_db_id
 
 
-###############################################################################
+def add_user_in_db(bot, update):
+    query = update.callback_query
+    bot.delete_message(chat_id=query.message.chat_id,
+        message_id=query.message.message_id)
+    bot.send_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f"Я запомнил твой выбор",
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
+        parse_mode='Markdown',
+        )
+
+
+def change_club(bot, update):
+    query = update.callback_query
+    bot.delete_message(chat_id=query.message.chat_id,
+        message_id=query.message.message_id)
+    bot.send_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f"Решил выбрать другой клуб?",
+        reply_markup=InlineKeyboardMarkup(settings.CHANGE_CLUB),
+        parse_mode='Markdown',
+        )
+
+
+def main_menu(bot, update):
+    query = update.callback_query
+    bot.delete_message(chat_id=query.message.chat_id,
+        message_id=query.message.message_id)
+    bot.send_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f">>>>>>>>>>>> *ОСНОВНОЕ МЕНЮ* <<<<<<<<",
+        reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+        parse_mode='Markdown',
+        )
+
+
+def match_links(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'''Команда 1 - Команда 2
+АПЛ | 33-й тур | Начало в 22:00 МСК
+
+✔️*SopCast:*
+sop://broker.sopcast.com:3912/256999 (2000kbps)
+...
+
+✔️*Трансляции онлайн:*
+▶️https://vk.cc/9ghs3y
+▶️https://vk.cc/9ghsac
+
+✔️*Ace Stream:*
+acestream://d518402ca40430db6107a777879b511e9b930817 (1500kbps)
+...''',
+        reply_markup=InlineKeyboardMarkup(settings.LINKS),
+        parse_mode='Markdown',
+        )
+
+
+def alarm(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'''ТУТ БУДЕТ ВОЗМОЖНОСТЬ НАСТРОИТЬ УВЕДОМЛЕНИЯ''',
+        reply_markup=InlineKeyboardMarkup(settings.ALARM),
+        parse_mode='Markdown',
+        )
+
+
+def next_match(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'*Следующий матч:* Slavia Praha - Chelsea FC | 11/04/2019	в 20:00',
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
+        parse_mode='Markdown',
+        )
+
+
+def last_match(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'*Прошедший матч:* Chelsea FC - West Ham United | *2:0*',
+        reply_markup=InlineKeyboardMarkup(settings.LAST_GAME),
+        parse_mode='Markdown',
+        )
+
+
+def last_match_more(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'''ПОДРОБНАЯ ИНФОРМАЦИЯ О МАТЧЕ''',
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
+        parse_mode='Markdown',
+        )
+
+
+def current_table(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'[Текущая таблица](http://www.espn.com/soccer/standings/_/league/eng.1)',
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
+        parse_mode='Markdown',
+        )
+
+
+def my_club_info(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'Тут будет красивая информация о клубе :)',
+        reply_markup=InlineKeyboardMarkup(settings.MY_CLUB_MENU),
+        parse_mode='Markdown',
+        )
+
+
+def about_me(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=settings.ABOUT,
+        reply_markup=InlineKeyboardMarkup(settings.ABOUT_BUTTONS),
+        parse_mode='Markdown',
+        )
+
 
 def main():
     mybot = Updater(TOKEN, request_kwargs=PROXY)
@@ -448,10 +258,22 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('menu', main_menu))
     dp.add_handler(CallbackQueryHandler(first_page, pattern='p1'))
     dp.add_handler(CallbackQueryHandler(second_page, pattern='p2'))
     dp.add_handler(CallbackQueryHandler(third_page, pattern='p3'))
     dp.add_handler(CallbackQueryHandler(forth_page, pattern='p4'))
+    dp.add_handler(CallbackQueryHandler(add_user_in_db, pattern='add_user'))
+    dp.add_handler(CallbackQueryHandler(change_club, pattern='change'))
+    dp.add_handler(CallbackQueryHandler(main_menu, pattern='menu'))
+    dp.add_handler(CallbackQueryHandler(match_links, pattern='links'))
+    dp.add_handler(CallbackQueryHandler(next_match, pattern='next'))
+    dp.add_handler(CallbackQueryHandler(last_match, pattern='last'))
+    dp.add_handler(CallbackQueryHandler(current_table, pattern='table'))
+    dp.add_handler(CallbackQueryHandler(my_club_info, pattern='my_club'))
+    dp.add_handler(CallbackQueryHandler(about_me, pattern='about'))
+    dp.add_handler(CallbackQueryHandler(last_match_more, pattern='game'))
+    dp.add_handler(CallbackQueryHandler(alarm, pattern='alarm'))
 
 
     mybot.start_polling()
