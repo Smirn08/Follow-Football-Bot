@@ -32,10 +32,12 @@ def take_club_from_db(club_id):
                     WHERE clubs.club_id = '{club_id}'
                     ''')
 
-    results = cursor.fetchall()
+    results = cursor.fetchone()
 
-    for info in results:
-        t_info = info
+    return results
+
+    # for info in results:
+    #     t_info = info
 
     # club_id = t_info[0]
     # club_name = t_info[1]
@@ -51,6 +53,3 @@ def take_club_from_db(club_id):
     # st_address = t_info[11]
     # embl_link = t_info[12]
     # site = t_info[13]
-
-    return t_info
-
