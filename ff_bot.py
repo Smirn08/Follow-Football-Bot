@@ -5,6 +5,9 @@ import settings
 from my_bot_token import TOKEN
 from my_bot_proxy import PROXY
 from take_club_from_db import take_club_from_db
+from check_user import check_user_in_db
+from check_user import add_user
+from check_user import take_club_id
 
 from emoji import emojize
 
@@ -28,13 +31,18 @@ def talk_to_me(bot, update):
 
 
 def start(bot, update):
-    emo_hi = emojize(choice(settings.USER_EMOJI), use_aliases=True)
-    text = '''Привет *{}* {}, давай смотреть футбол вместе!
+    chat_id = update.message.chat_id
+    status = check_user_in_db(chat_id)
+    if status is True:
+        main_menu(bot, update)
+    if status is False:
+        emo_hi = emojize(choice(settings.USER_EMOJI), use_aliases=True)
+        text = '''Привет *{}* {}, давай смотреть футбол вместе!
 Подписывайся на свой любимый клуб и ты никогда не пропустишь матч!
 Какой твой любимый клуб EPL?'''.format(update.message.chat.first_name, emo_hi)
-    update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(settings.START_KEYS),
-        parse_mode='Markdown')
+        update.message.reply_text(
+            text, reply_markup=InlineKeyboardMarkup(settings.START_KEYS),
+            parse_mode='Markdown')
 
 
 def first_page(bot, update):
@@ -103,7 +111,7 @@ def my_club(bot, update):
                     .replace('https://','')}]({t_info[13]})''',
         reply_markup=InlineKeyboardMarkup(settings.LAST_CHOICE),
         parse_mode="Markdown")
-    return club_db_id == club_db_id
+        add_user(chat_id, club_db_id)
 
 
 def add_user_in_db(bot, update):
@@ -133,16 +141,26 @@ def change_club(bot, update):
 
 
 def main_menu(bot, update):
-    query = update.callback_query
-    bot.delete_message(chat_id=query.message.chat_id,
-        message_id=query.message.message_id)
-    bot.send_message(
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-        text=f">>>>>>>>>>>> *ОСНОВНОЕ МЕНЮ* <<<<<<<<",
-        reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
-        parse_mode='Markdown',
-        )
+    try:
+        query = update.callback_query
+        bot.delete_message(chat_id=query.message.chat_id,
+            message_id=query.message.message_id)
+        bot.send_message(
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+            text=f">>>>>>>>>>>> *ОСНОВНОЕ МЕНЮ* <<<<<<<<",
+            reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+            parse_mode='Markdown',
+            )
+    except AttributeError:
+        chat_id = update.message.chat_id
+        bot.send_message(
+            chat_id=chat_id,
+            message_id=update.message.message_id,
+            text=f">>>>>>>>>>>> *ОСНОВНОЕ МЕНЮ* <<<<<<<<",
+            reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+            parse_mode='Markdown',
+            )
 
 
 def match_links(bot, update):
@@ -226,13 +244,28 @@ def current_table(bot, update):
 
 def my_club_info(bot, update):
     query = update.callback_query
-    bot.edit_message_text(
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-        text=f'Тут будет красивая информация о клубе :)',
-        reply_markup=InlineKeyboardMarkup(settings.MY_CLUB_MENU),
-        parse_mode='Markdown',
-        )
+    chat_id = query.message.chat_id
+    bot.delete_message(chat_id=chat_id,
+        message_id=query.message.message_id)
+    print(query.message.message_id)
+
+    club_db_id = take_club_id(439051112)  # необходимо пофиксить, чтоб выводил клуб юзера, не могу понять как получить id юзера
+    t_info = take_club_from_db(club_db_id)
+    logo_link = t_info[12]
+    bot.send_photo(chat_id=chat_id, photo=logo_link,
+    caption=f'''*{t_info[2]}* {t_info[6]}
+{t_info[3]} | {t_info[8]}
+
+*Founded:* {t_info[4]}
+
+*Home:* {t_info[9]}
+*Capacity:* {t_info[10]}
+*Address:* {t_info[11]}
+
+*Web:* [{t_info[13].replace('http://','')
+                .replace('https://','')}]({t_info[13]})''',
+    reply_markup=InlineKeyboardMarkup(settings.MY_CLUB_MENU),
+    parse_mode="Markdown")
 
 
 def about_me(bot, update):
@@ -259,6 +292,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('menu', main_menu))
+    dp.add_handler(CommandHandler('my_club', my_club_info))
     dp.add_handler(CallbackQueryHandler(first_page, pattern='p1'))
     dp.add_handler(CallbackQueryHandler(second_page, pattern='p2'))
     dp.add_handler(CallbackQueryHandler(third_page, pattern='p3'))
@@ -280,4 +314,5 @@ def main():
     mybot.idle()
 
 
-main()
+if __name__ == '__main__':
+    main()
