@@ -1,4 +1,5 @@
 import sqlite3
+# получение инфы о клубе из базы данных
 
 
 def take_club_from_db(club_id):
