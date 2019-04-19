@@ -1,49 +1,104 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton
 
 USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
 ################################ KEYBOARDS ####################################
-MAIN_MENU_KEYS = [[InlineKeyboardButton('Трансляции', callback_data='links'),
-                    InlineKeyboardButton('Следующий Матч', callback_data='next')],
-                [InlineKeyboardButton('Информация о последнем матче', callback_data='last')],
-                [InlineKeyboardButton('Турнирная таблица', callback_data='table')],
-                [InlineKeyboardButton('Мой клуб', callback_data='my_club'),
-                    InlineKeyboardButton('Об авторе', callback_data='about')]]
+MAIN_MENU_KEYS = [
+    [
+        InlineKeyboardButton('Трансляции', callback_data='links'),
+        InlineKeyboardButton('Турнирная таблица', callback_data='table')
+    ],
+    [
+        InlineKeyboardButton('Сыгранные матчи', callback_data='last'),
+        InlineKeyboardButton('Следующий Матч', callback_data='next')
+    ],
+    [
+        InlineKeyboardButton('Мой клуб', callback_data='my_club'),
+        InlineKeyboardButton('Об авторе', callback_data='about')
+    ]
+]
 
-LINKS = [[InlineKeyboardButton('Уведомления', callback_data='alarm'),
-            InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+LINKS = [
+    [
+        InlineKeyboardButton('Уведомления', callback_data='alarm'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-ALARM = [[InlineKeyboardButton('<', callback_data='links'),
-            InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+ALARM = [
+    [
+        InlineKeyboardButton('<', callback_data='links'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-LAST_GAME = [[InlineKeyboardButton('Подробнее', callback_data='game'),
-                InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+LAST_GAME = [
+    [
+        InlineKeyboardButton('Подробнее', callback_data='game'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-MY_CLUB_MENU = [[InlineKeyboardButton('Сменить клуб', callback_data='change'),
-                    InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+LAST_GAME_MORE = [
+    [
+        InlineKeyboardButton('<', callback_data='last'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-ABOUT_BUTTONS = [[InlineKeyboardButton('press F to pay respect', url='https://t.me/Smirn08'),
-                    InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+MY_CLUB_MENU = [
+    [
+        InlineKeyboardButton('Сменить клуб', callback_data='change'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-MENU_BUTTON = [[InlineKeyboardButton('МЕНЮ', callback_data='menu')]]
+ABOUT_BUTTONS = [
+    [
+        InlineKeyboardButton('press F to pay respect', url='https://t.me/Smirn08'),
+        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+    ]
+]
 
-START_KEYS = [[InlineKeyboardButton('Выбрать клуб', callback_data='p1')]]
+MENU_BUTTON = [
+    [InlineKeyboardButton('МЕНЮ', callback_data='menu')]
+]
 
-CHANGE_CLUB = [[InlineKeyboardButton('Да! Решил выбрать другой!', callback_data='p1')],
-                [InlineKeyboardButton('Нет. Передумал...', callback_data='menu')]]
+START_KEYS = [
+    [InlineKeyboardButton('Выбрать клуб', callback_data='p1')]
+]
 
-FIRST_PAGE_KEYS = [[InlineKeyboardButton('>', callback_data='p2')]]
+CHANGE_CLUB = [
+    [InlineKeyboardButton('Да! Решил выбрать другой!', callback_data='p1')],
+    [InlineKeyboardButton('Нет. Передумал...', callback_data='menu')]
+]
 
-SECOND_PAGE_KEYS = [[InlineKeyboardButton('|<', callback_data='p1'),
-                    InlineKeyboardButton('>', callback_data='p3')]]
+FIRST_PAGE_KEYS = [
+    [InlineKeyboardButton('>', callback_data='p2')]
+]
 
-THIRD_PAGE_KEYS = [[InlineKeyboardButton('<', callback_data='p2'),
-                    InlineKeyboardButton('>|', callback_data='p4')]]
+SECOND_PAGE_KEYS = [
+    [
+        InlineKeyboardButton('|<', callback_data='p1'),
+        InlineKeyboardButton('>', callback_data='p3')
+    ]
+]
 
-FORTH_PAGE_KEYS = [[InlineKeyboardButton('<', callback_data='p3')]]
+THIRD_PAGE_KEYS = [
+    [
+        InlineKeyboardButton('<', callback_data='p2'),
+        InlineKeyboardButton('>|', callback_data='p4')
+    ]
+]
 
-LAST_CHOICE = [[InlineKeyboardButton('Подтвердить выбор', callback_data='add_user')],
-                [InlineKeyboardButton('Выбрать другой клуб', callback_data='change')]]
+FORTH_PAGE_KEYS = [
+    [InlineKeyboardButton('<', callback_data='p3')]
+]
+
+LAST_CHOICE = [
+    [InlineKeyboardButton('Подтвердить выбор', callback_data='add_user')],
+    [InlineKeyboardButton('Выбрать другой клуб', callback_data='change')]
+]
 
 ###############################################################################
 
@@ -109,49 +164,49 @@ COUNTRY = (
 )
 
 CLUB_COMMAND_LIST = [
-        'afcb', 'afc', 'bha', 'bfc', 'car',
-        'cfc', 'cpfc', 'efc', 'ffc', 'htfc',
-        'lei', 'lfc', 'mcfc', 'mufc', 'new',
-        'sou', 'tot', 'wfc', 'whu', 'wol'
+        'bou', 'ars', 'brh', 'bur', 'cdf',
+        'che', 'cry', 'eve', 'ful', 'hdd',
+        'lei', 'liv', 'mci', 'mun', 'new',
+        'sou', 'tot', 'wat', 'whu', 'wlv'
 ]
 
 CLUBS_TG_ID = {
-        '/afcb': 1, '/afc': 2, '/bha': 3, '/bfc': 4, '/car': 5,
-        '/cfc': 6, '/cpfc': 7, '/efc': 8, '/ffc': 9, '/htfc': 10,
-        '/lei': 11, '/lfc': 12, '/mcfc': 13, '/mufc': 14, '/new': 15,
-        '/sou': 16, '/tot': 17, '/wfc': 18, '/whu': 19, '/wol': 20
+        '/bou': 1, '/ars': 2, '/brh': 3, '/bur': 4, '/cdf': 5,
+        '/che': 6, '/cry': 7, '/eve': 8, '/ful': 9, '/hdd': 10,
+        '/lei': 11, '/liv': 12, '/mci': 13, '/mun': 14, '/new': 15,
+        '/sou': 16, '/tot': 17, '/wat': 18, '/whu': 19, '/wlv': 20
 }
 
 LIST_ONE = f'''*AFC Bournemouth*
-/afcb
+/bou
 *Arsenal FC*
-/afc
+/ars
 *Brighton & Hove Albion*
-/bha
+/brh
 *Burnley FC*
-/bfc
+/bur
 *Cardiff City*
-/car'''
+/cdf'''
 
 LIST_TWO = f'''*Chelsea FC*
-/cfc
+/che
 *Crystal Palace*
-/cpfc
+/cry
 *Everton FC*
-/efc
+/eve
 *Fulham FC*
-/ffc
+/ful
 *Huddersfield Town*
-/htfc'''
+/hdd'''
 
 LIST_THREE = f'''*Leicester City*
 /lei
 *Liverpool FC*
-/lfc
+/liv
 *Manchester City*
-/mcfc
+/mci
 *Manchester United*
-/mufc
+/mun
 *Newcastle United*
 /new'''
 
@@ -160,23 +215,49 @@ LIST_FOUR = f'''*Southampton FC*
 *Tottenham Hotspur*
 /tot
 *Watford FC*
-/wfc
+/wat
 *West Ham United*
 /whu
 *Wolverhampton Wanderers*
-/wol'''
+/wlv'''
 
 ABOUT = f'''bot by [Maksim Smirnov](github.com/Smirn08)'''
 
+QUERY_ID = None
 
-# CLUB_PRINT_TEXT = f'''*{t_info[2]}* {t_info[6]}
-# {t_info[3]} | {t_info[8]}
+CLUB_ID = None
 
-# *Founded:* {t_info[4]}
 
-# *Home:* {t_info[9]}
-# *Capacity:* {t_info[10]}
-# *Address:* {t_info[11]}
+def my_club_text(t_info):
+    # блок текста с информацией о клубе
+    text = f'''*{t_info[2]}* {t_info[6]}
+{t_info[3]} | {t_info[8]}
 
-# *Web:* [{t_info[13].replace('http://','')
-#                    .replace('https://','')}]({t_info[13]})'''
+*Founded:* {t_info[4]}
+
+*Home:* {t_info[9]}
+*Capacity:* {t_info[10]}
+*Address:* {t_info[11]}
+
+*Web:* [{t_info[13].replace('http://','')
+                    .replace('https://','')}]({t_info[13]})'''
+    return text
+
+
+def match_link_text():
+    # блок текста выводом ссылок на матчи
+    text = f'''Команда 1 - Команда 2
+АПЛ | 33-й тур | Начало в 22:00 МСК
+
+✔️*SopCast:*
+sop://broker.sopcast.com:3912/256999 (2000kbps)
+...
+
+✔️*Трансляции онлайн:*
+▶️https://vk.cc/9ghs3y
+▶️https://vk.cc/9ghsac
+
+✔️*Ace Stream:*
+acestream://d518402ca40430db6107a777879b511e9b930817 (1500kbps)
+...'''
+    return text
