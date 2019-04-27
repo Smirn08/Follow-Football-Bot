@@ -92,7 +92,7 @@ def next_games(ALL_GAMES):
     data_str = today.strftime('%Y-%m-%d')
     NEXT_GAMES = []
     for games in ALL_GAMES:
-        if games['unique_code'][0:10] > data_str:
+        if games['unique_code'][0:10] >= data_str:
             NEXT_GAMES.append(games)
 
     return NEXT_GAMES
@@ -134,7 +134,7 @@ def load_games_in_db(ALL_GAMES, club_id, game_type):
                                 WHERE club_id = "{club_id}"
                             ''')
 
-        if games['unique_code'][0:10] > data_str and game_type == 'NG':
+        if games['unique_code'][0:10] >= data_str and game_type == 'NG':
             cursor.execute(f'''INSERT OR REPLACE INTO upcoming_matches (date, home_club,
                                     time, guest_club, unique_code)
                                 VALUES (:date, :home, :result_or_time,
