@@ -1,8 +1,10 @@
+from datetime import datetime
 from telegram import InlineKeyboardButton
+
 
 USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
-################################ KEYBOARDS ####################################
+# KEYBOARDS
 MAIN_MENU_KEYS = [
     [
         InlineKeyboardButton('Трансляции', callback_data='links'),
@@ -10,7 +12,7 @@ MAIN_MENU_KEYS = [
     ],
     [
         InlineKeyboardButton('Сыгранные матчи', callback_data='last'),
-        InlineKeyboardButton('Следующий Матч', callback_data='next')
+        InlineKeyboardButton('Будущие Матчи', callback_data='next')
     ],
     [
         InlineKeyboardButton('Мой клуб', callback_data='my_club'),
@@ -28,7 +30,8 @@ LINKS = [
 ALARM = [
     [
         InlineKeyboardButton('<', callback_data='links'),
-        InlineKeyboardButton('МЕНЮ', callback_data='menu')
+        InlineKeyboardButton('Нет', callback_data='say_no'),
+        InlineKeyboardButton('Да', callback_data='say_yes')
     ]
 ]
 
@@ -55,7 +58,10 @@ MY_CLUB_MENU = [
 
 ABOUT_BUTTONS = [
     [
-        InlineKeyboardButton('press F to pay respect', url='https://t.me/Smirn08'),
+        InlineKeyboardButton(
+            'press F to pay respect',
+            url='https://t.me/Smirn08'
+        ),
         InlineKeyboardButton('МЕНЮ', callback_data='menu')
     ]
 ]
@@ -244,20 +250,67 @@ def my_club_text(t_info):
     return text
 
 
-def match_link_text():
-    # блок текста выводом ссылок на матчи
-    text = f'''Команда 1 - Команда 2
-АПЛ | 33-й тур | Начало в 22:00 МСК
+def next_or_last_games_text(next=None, last=None):
+    # блок текста вывода информации о матчах
+    text = ''
+    if next is None:
+        if len(last) == 0:
+            text = f'_Ваш клуб не сыграл ни одного матча в этом сезоне_'
+        else:
+            for item in last[:5]:
+                text += f"""\n{item['date']}
+{item['home']} *{item['result_or_time']}* {item['away']}\n"""
+    if last is None:
+        if len(next) == 0:
+            text = f'_Ваш клуб сыграл все матчи в этом сезоне_'
+        else:
+            for item in next:
+                text += f"""\n{item['date']}
+{item['home']} - {item['away']} | *{item['result_or_time']}* (MSK)\n"""
 
-✔️*SopCast:*
-sop://broker.sopcast.com:3912/256999 (2000kbps)
-...
+    return text
 
-✔️*Трансляции онлайн:*
-▶️https://vk.cc/9ghs3y
-▶️https://vk.cc/9ghsac
 
-✔️*Ace Stream:*
-acestream://d518402ca40430db6107a777879b511e9b930817 (1500kbps)
-...'''
+def match_link_text(ace=None, sop=None, info=None, next=None):
+    # блок текста ссылок на матчи
+    today = datetime.today()
+    data_str = today.strftime('%Y-%m-%d')
+    if info is not None:
+        text = f"{info[0]} | {info[2]} (MSK)\n{info[1]} - {info[3]}\n"
+        if sop is not None:
+            text += "\n✔️*SopCast:*\n"
+            for item in sop:
+                text += f"{item['link']} ({item['kbs']})\n"
+        if ace is not None:
+            text += "\n✔️*Ace Stream:*\n"
+            for item in ace:
+                text += f"{item['link']} ({item['kbs']})\n"
+    for item in next[:1]:
+        if item['unique_code'][0:10] == data_str:
+            text = f"""Сегодня *{item['date']}* в *{item['result_or_time']} (MSK)* игра!
+
+{item['home']} - {item['away']}\n"""
+            text += f'*\nСсылки  появятся за 2 минуты до матча*\n'
+        else:
+            text = f'*Ваш клуб сегодня не играет*\n'
+            text += f"""\nБлижайшая игра:
+{item['date']} | *{item['result_or_time']}* (MSK)
+{item['home']} - {item['away']}\n"""
+
+    return text
+
+
+def epl_table():
+    # функция вывода текста с таблицей АПЛ
+    text = f'''
+    [Таблица АПЛ 2018/19](http://www.espn.com/soccer/standings/_/league/eng.1)
+    '''
+    return text
+
+
+def more_about_last_matches(url):
+    # ссылка на информацию о матчах
+    text = f'''
+    [НАЖМИ СЮДА ДЛЯ ПРОСМОТРА ИНФОРМАЦИИ]({url})
+    '''
     return text
