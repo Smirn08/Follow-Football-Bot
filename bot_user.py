@@ -22,7 +22,7 @@ def add_user(tg_fullname, tg_nickname, user_tg_id, user_club_id):
     # добавление нового юзера в базу
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-    cursor.execute(f"REPLACE INTO users VALUES('{tg_fullname}', '{tg_nickname}', '{user_tg_id}', {user_club_id})")
+    cursor.execute(f"INSERT OR REPLACE INTO users VALUES('{tg_fullname}', '{tg_nickname}', '{user_tg_id}', {user_club_id})")
     print(f'NEW USER ADDED or UPDATED: id: {user_tg_id} - club_id: {user_club_id}')
 
     conn.commit()
