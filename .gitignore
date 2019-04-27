@@ -6,3 +6,4 @@ __pycache__
 *.log
 my_bot_token.py
 my_bot_proxy.py
+mytests.py
