@@ -3,10 +3,10 @@ from random import choice
 
 import settings
 import bot_user
-import last_matches
+import ten_matches
+import stream_links
 from my_bot_token import TOKEN
 from my_bot_proxy import PROXY
-import take_last_matches_from_web
 from take_club_from_db import take_club_from_db
 
 from emoji import emojize
@@ -17,10 +17,11 @@ from telegram.ext import CallbackQueryHandler
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(
+                    format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     handlers=[logging.FileHandler('bot.log', 'w', 'utf-8')]
-                    )
+)
 
 
 def clean(bot, update):
@@ -164,36 +165,88 @@ def change_club(bot, update):
 def main_menu(bot, update):
     # вывод МЕНЮ, либо через прямые сообщения, либо через возврат
     try:
-        query = update.callback_query
-        bot.delete_message(
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id
-        )
-        bot.send_message(
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
-            reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
-            parse_mode='Markdown'
-        )
-    except AttributeError:
         chat_id = update.message.chat_id
-        bot.send_message(
-            chat_id=chat_id,
-            message_id=update.message.message_id,
-            text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
-            reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
-            parse_mode='Markdown'
-        )
+        status = bot_user.check_in_db(chat_id)
+        if status:
+            try:
+                query = update.callback_query
+                chat_id = query.message.chat_id
+                bot.delete_message(
+                    chat_id=chat_id,
+                    message_id=query.message.message_id
+                )
+                bot.send_message(
+                    chat_id=chat_id,
+                    message_id=query.message.message_id,
+                    text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
+                    reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+                    parse_mode='Markdown'
+                )
+            except AttributeError:
+                chat_id = update.message.chat_id
+                bot.send_message(
+                    chat_id=chat_id,
+                    message_id=update.message.message_id,
+                    text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
+                    reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+                    parse_mode='Markdown'
+                )
+        else:
+            bot.delete_message(
+                chat_id=update.message.chat_id, message_id=update.message.message_id
+            )
+    except AttributeError:
+        try:
+            query = update.callback_query
+            chat_id = query.message.chat_id
+            bot.delete_message(
+                chat_id=chat_id,
+                message_id=query.message.message_id
+            )
+            bot.send_message(
+                chat_id=chat_id,
+                message_id=query.message.message_id,
+                text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
+                reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+                parse_mode='Markdown'
+            )
+        except AttributeError:
+            chat_id = update.message.chat_id
+            bot.send_message(
+                chat_id=chat_id,
+                message_id=update.message.message_id,
+                text=f">>>> *ОСНОВНОЕ МЕНЮ* <<<<",
+                reply_markup=InlineKeyboardMarkup(settings.MAIN_MENU_KEYS),
+                parse_mode='Markdown'
+            )
 
 
 def match_links(bot, update):
     # вывод ссылок на трансляции
     query = update.callback_query
+    chat_id = query.message.chat_id
+    club_db_id = bot_user.take_club_id(chat_id)
+    club_page_link = stream_links.take_link(club_db_id)
+    game_page_link = stream_links.main(club_page_link)
+    all_stream_links = stream_links.get_stream_links(game_page_link)
+    club_url = ten_matches.club_link(club_db_id)
+    if ten_matches.check_NG_update(club_db_id):
+        next_matches = ten_matches.get_next_games_from_db(club_db_id)
+    else:
+        all_matches = ten_matches.main(club_url)
+        ten_matches.load_games_in_db(all_matches, club_db_id, 'NG')
+        next_matches = ten_matches.next_games(all_matches)
+    if all_stream_links is not False:
+        sop_links = stream_links.sopcast_links(all_stream_links)
+        ace_links = stream_links.acestream_links(all_stream_links)
+        info = ten_matches.get_today_match_from_db(club_db_id)
+    else:
+        sop_links, ace_links, info = None, None, None
+
     bot.edit_message_text(
-        chat_id=query.message.chat_id,
+        chat_id=chat_id,
         message_id=query.message.message_id,
-        text=settings.match_link_text,
+        text=settings.match_link_text(sop_links, ace_links, info, next_matches),
         reply_markup=InlineKeyboardMarkup(settings.LINKS),
         parse_mode='Markdown'
     )
@@ -205,8 +258,40 @@ def alarm(bot, update):
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        text=f'''_ТУТ БУДЕТ ВОЗМОЖНОСТЬ НАСТРОИТЬ УВЕДОМЛЕНИЯ_''',
+        text=f'''Включить уведомление о ближайшей игре?''',
         reply_markup=InlineKeyboardMarkup(settings.ALARM),
+        parse_mode='Markdown'
+    )
+
+
+def no_alarm(bot, update):
+    # функция отмены уведомлений
+    query = update.callback_query
+    bot.delete_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id
+    )
+    bot.send_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'''Я больше не буду присылать уведомления''',
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
+        parse_mode='Markdown'
+    )
+
+
+def yes_alarm(bot, update):
+    # функция подтверждения уведомлений
+    query = update.callback_query
+    bot.delete_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id
+    )
+    bot.send_message(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=f'''*Уведомление придет тебе за 10 минут до игры*''',
+        reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
         parse_mode='Markdown'
     )
 
@@ -214,10 +299,20 @@ def alarm(bot, update):
 def next_match(bot, update):
     # вывод инфы о следующем матче
     query = update.callback_query
+    chat_id = query.message.chat_id
+    club_db_id = bot_user.take_club_id(chat_id)
+    club_url = ten_matches.club_link(club_db_id)
+    if ten_matches.check_NG_update(club_db_id):
+        next_matches = ten_matches.get_next_games_from_db(club_db_id)
+    else:
+        all_matches = ten_matches.main(club_url)
+        ten_matches.load_games_in_db(all_matches, club_db_id, 'NG')
+        next_matches = ten_matches.next_games(all_matches)
+
     bot.edit_message_text(
-        chat_id=query.message.chat_id,
+        chat_id=chat_id,
         message_id=query.message.message_id,
-        text=f'*Следующий матч:* Team 01 - Team 02 | dd/mm/yyyy	в hh:mm',
+        text=settings.next_or_last_games_text(next_matches, None),
         reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
         parse_mode='Markdown'
     )
@@ -228,14 +323,18 @@ def last_match(bot, update):
     query = update.callback_query
     chat_id = query.message.chat_id
     club_db_id = bot_user.take_club_id(chat_id)
-    # получение информации в web
-    take_last_matches_from_web.take_link(club_db_id)
+    club_url = ten_matches.club_link(club_db_id)
+    if ten_matches.check_LG_update(club_db_id):
+        last_matches = ten_matches.get_last_games_from_db(club_db_id)
+    else:
+        all_matches = ten_matches.main(club_url)
+        ten_matches.load_games_in_db(all_matches, club_db_id, 'LG')
+        last_matches = ten_matches.last_games(all_matches)
 
     bot.edit_message_text(
         chat_id=chat_id,
         message_id=query.message.message_id,
-        text=last_matches.print_result(
-            last_matches.take_last_match_from_db(club_db_id)),
+        text=settings.next_or_last_games_text(None, last_matches),
         reply_markup=InlineKeyboardMarkup(settings.LAST_GAME),
         parse_mode='Markdown'
     )
@@ -244,10 +343,14 @@ def last_match(bot, update):
 def last_match_more(bot, update):
     # подробная информация о прошедших матчах
     query = update.callback_query
+    chat_id = query.message.chat_id
+    club_db_id = bot_user.take_club_id(chat_id)
+    url = stream_links.take_link(club_db_id)
+
     bot.edit_message_text(
-        chat_id=query.message.chat_id,
+        chat_id=chat_id,
         message_id=query.message.message_id,
-        text=f'''_ТУТ БУДЕТ ПОДРОБНАЯ ИНФОРМАЦИЯ О МАТЧАХ_''',
+        text=settings.more_about_last_matches(url),
         reply_markup=InlineKeyboardMarkup(settings.LAST_GAME_MORE),
         parse_mode='Markdown'
     )
@@ -259,7 +362,7 @@ def current_table(bot, update):
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        text=f'[Текущая таблица](http://www.espn.com/soccer/standings/_/league/eng.1)',
+        text=settings.epl_table(),
         reply_markup=InlineKeyboardMarkup(settings.MENU_BUTTON),
         parse_mode='Markdown'
     )
@@ -309,6 +412,7 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.text, clean))
     dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('restart', start))
     dp.add_handler(CommandHandler('menu', main_menu))
     dp.add_handler(CommandHandler('my_club', my_club_info))
     dp.add_handler(CallbackQueryHandler(first_page, pattern='p1'))
@@ -326,6 +430,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(about_me, pattern='about'))
     dp.add_handler(CallbackQueryHandler(last_match_more, pattern='game'))
     dp.add_handler(CallbackQueryHandler(alarm, pattern='alarm'))
+    dp.add_handler(CallbackQueryHandler(no_alarm, pattern='say_no'))
+    dp.add_handler(CallbackQueryHandler(yes_alarm, pattern='say_yes'))
 
     mybot.start_polling()
     mybot.idle()
